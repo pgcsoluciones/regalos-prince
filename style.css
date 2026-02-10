@@ -1,4 +1,25 @@
 :root {
+  --verde-prince: #92bc54; /* El verde de tu logo */
+  --negro-prince: #1a1a1a; /* El negro de la palabra "Prince" */
+  --blanco: #ffffff;
+  --gris-suave: #f9f9f9;
+}
+
+.btn-prince {
+  background-color: var(--verde-prince);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+}
+
+header {
+  border-bottom: 3px solid var(--verde-prince); /* Línea decorativa verde */
+}
+
+:root {
   --verde-prince: #92bc54; /* El verde exacto de tu logo */
   --negro-prince: #000000;
   --blanco: #ffffff;
