@@ -2,45 +2,114 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regalos San Valentín | Prince Grupo Creativo</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos rápidos para el menú hamburguesa */
+        .menu-hamburguesa {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .linea {
+            width: 25px;
+            height: 3px;
+            background-color: var(--negro-prince);
+            border-radius: 2px;
+        }
+        .nav-movil {
+            display: none; /* Se activará con JavaScript */
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background: white;
+            flex-direction: column;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .nav-movil a {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            text-decoration: none;
+            color: black;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-    <header style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-        <img src="logo%20blco%20pgc-01.png" alt="Prince Grupo Creativo" style="height: 80px; width: auto;">
-        <nav>
-            <a href="#catalogo" style="margin-right: 20px; text-decoration: none; color: black;">Catálogo</a>
-            <a href="#" class="btn-prince">Ir a Tienda</a>
+    <header style="position: sticky; top: 0; z-index: 1000; background: white; display: flex; justify-content: space-between; align-items: center; padding: 10px 5%; border-bottom: 2px solid var(--verde-prince);">
+        <img src="logo%20blco%20pgc-01.png" alt="Prince Grupo Creativo" style="height: 50px; width: auto;">
+        
+        <div class="menu-hamburguesa" onclick="toggleMenu()">
+            <div class="linea"></div>
+            <div class="linea"></div>
+            <div class="linea"></div>
+        </div>
+
+        <nav id="menu-desplegable" class="nav-movil">
+            <a href="#catalogo" onclick="toggleMenu()">Catálogo</a>
+            <a href="#" onclick="toggleMenu()">Personalizados</a>
+            <a href="#" onclick="toggleMenu()">Preguntas Frecuentes</a>
+            <a href="#" style="background: var(--verde-prince); color: white;">Ir a Tienda</a>
         </nav>
     </header>
 
-    <section class="hero">
-        <h1>Valentine's Day</h1>
-        <p>Detalles únicos de Prince Grupo Creativo para esa persona especial.</p>
-        <a href="#catalogo" class="btn-prince">Descubre las Colecciones</a>
+    <section class="hero" style="padding: 40px 20px; text-align: center; background: #fdfdfd;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Valentine's Day</h1>
+        <p style="color: #666; margin-bottom: 20px;">Detalles únicos de Prince Grupo Creativo.</p>
+        <a href="#catalogo" class="btn-prince" style="display: block; width: 100%; max-width: 250px; margin: 0 auto;">Ver Colecciones</a>
     </section>
 
-    <section style="padding: 40px; text-align: center;">
-        <h2>ELIGE TU ESTILO</h2>
-        <div class="grid-productos" id="catalogo">
-            <p>Cargando catálogo de San Valentín...</p>
+    <section id="catalogo" style="padding: 20px;">
+        <h2 style="font-size: 1.1rem; letter-spacing: 1px;">DESCUBRE NUESTRAS <strong style="color: var(--verde-prince);">COLECCIONES</strong></h2>
+        
+        <div class="grid-productos" id="catalogo-lista" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+            <div style="border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+                <div style="background: #f0f0f0; height: 150px;"></div>
+                <div style="padding: 10px;">
+                    <p style="font-size: 0.8rem; margin: 0;">Cargando...</p>
+                    <b style="color: var(--verde-prince);">$ 0.00</b>
+                </div>
+            </div>
+            <div style="border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+                <div style="background: #f0f0f0; height: 150px;"></div>
+                <div style="padding: 10px;">
+                    <p style="font-size: 0.8rem; margin: 0;">Cargando...</p>
+                    <b style="color: var(--verde-prince);">$ 0.00</b>
+                </div>
+            </div>
         </div>
     </section>
 
-    <div style="background-color: var(--verde-prince); padding: 40px; text-align: center; margin-bottom: 10px;">
-        <h2 style="color: black;">TESTIMONIO</h2>
-    </div>
-    <div style="background-color: var(--verde-prince); padding: 40px; text-align: center;">
-        <h2 style="color: black;">Preguntas Frecuentes</h2>
+    <div style="background-color: var(--verde-prince); padding: 30px; text-align: center; margin: 20px 0; border-radius: 10px;">
+        <h2 style="margin: 0;">TESTIMONIOS</h2>
     </div>
 
-    <footer style="padding: 40px; background: #333; color: white; margin-top: 50px;">
-        <p>&copy; 2026 Prince Grupo Creativo. Todos los derechos reservados.</p>
-        <small><a href="#" style="color: #ccc;">Términos y Condiciones</a> | <a href="#" style="color: #ccc;">Políticas de Envío</a></small>
+    <footer style="padding: 30px 20px; background: #1a1a1a; color: white; text-align: center;">
+        <p style="font-size: 0.9rem;">&copy; 2026 Prince Grupo Creativo.</p>
+        <div style="font-size: 0.7rem; margin-top: 10px; opacity: 0.6;">
+            <a href="#" style="color: white;">Términos</a> | <a href="#" style="color: white;">Envíos</a>
+        </div>
     </footer>
 
-    <div style="position: fixed; bottom: 20px; right: 20px; background: #000; color: white; padding: 15px; border-radius: 50px; cursor: pointer;">
-        🤖 Asistente Prince
+    <div class="ai-widget" style="position: fixed; bottom: 20px; right: 20px; background: black; color: white; padding: 12px 20px; border-radius: 30px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <span>🤖</span> <b>Asistente</b>
     </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu-desplegable');
+            if (menu.style.display === 'flex') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'flex';
+            }
+        }
+    </script>
 </body>
 </html>
