@@ -1,10 +1,24 @@
+/* =========================================
+   1. VARIABLES Y CONFIGURACIÓN BASE
+   ========================================= */
 :root {
-  --verde-prince: #92bc54; /* El verde de tu logo */
-  --negro-prince: #1a1a1a; /* El negro de la palabra "Prince" */
+  --verde-prince: #92bc54; /* Verde oficial de tu logo */
+  --negro-prince: #1a1a1a; /* Negro corporativo */
   --blanco: #ffffff;
   --gris-suave: #f9f9f9;
+  --sombra: 0 2px 10px rgba(0,0,0,0.05);
 }
 
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background-color: var(--blanco);
+  color: #333;
+}
+
+/* =========================================
+   2. COMPONENTES GLOBALES (BOTONES)
+   ========================================= */
 .btn-prince {
   background-color: var(--verde-prince);
   color: white;
@@ -13,47 +27,31 @@
   text-decoration: none;
   font-weight: bold;
   display: inline-block;
+  transition: 0.3s;
+  border: none;
+  cursor: pointer;
+  text-align: center;
 }
 
-header {
-  border-bottom: 3px solid var(--verde-prince); /* Línea decorativa verde */
+.btn-prince:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
 }
 
-:root {
-  --verde-prince: #92bc54; /* El verde exacto de tu logo */
-  --negro-prince: #000000;
-  --blanco: #ffffff;
-  --gris-fondo: #f9f9f9;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  background-color: var(--blanco);
-}
-
+/* =========================================
+   3. ESTRUCTURA (HEADER Y FOOTER)
+   ========================================= */
 header {
   background: var(--blanco);
   padding: 15px 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.btn-prince {
-  background-color: var(--verde-prince);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: 0.3s;
-}
-
-.btn-prince:hover {
-  filter: brightness(1.1);
-  transform: translateY(-2px);
+  box-shadow: var(--sombra);
+  border-bottom: 3px solid var(--verde-prince);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .footer-prince {
@@ -62,14 +60,80 @@ header {
   padding: 40px 5%;
   text-align: center;
 }
-/* Optimización para Celulares */
+
+/* =========================================
+   4. CATÁLOGO Y GALERÍA (NUEVO)
+   ========================================= */
+.grid-productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Slider de imágenes dentro de la tarjeta del producto */
+.card-gallery {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  height: 220px;
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  background: #eee;
+}
+
+.card-gallery img {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* Ocultar barra de scroll para un look más limpio */
+.card-gallery::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================================
+   5. VISOR DE IMÁGENES (MODAL)
+   ========================================= */
+.modal-prince {
+  display: none;
+  position: fixed;
+  z-index: 3000;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  max-width: 95%;
+  max-height: 80vh;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.close-modal {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  color: white;
+  font-size: 35px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* =========================================
+   6. OPTIMIZACIÓN MÓVIL (MAX 600PX)
+   ========================================= */
 @media (max-width: 600px) {
   header {
     padding: 10px 3%;
   }
   
   h1 {
-    font-size: 24px; /* Títulos más legibles en móvil */
+    font-size: 24px;
   }
 
   .grid-productos {
@@ -79,17 +143,20 @@ header {
   }
 
   .btn-prince {
-    width: 100%; /* Botones de ancho completo para que sea fácil clickear */
-    text-align: center;
+    width: 100%;
     box-sizing: border-box;
   }
 
-  /* El menú de categorías será un scroll horizontal */
   .categorias-scroll {
     display: flex;
     overflow-x: auto;
     white-space: nowrap;
     padding: 10px;
     gap: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .card-gallery {
+    height: 180px; /* Un poco más pequeño para pantallas compactas */
   }
 }
