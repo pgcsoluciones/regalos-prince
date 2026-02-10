@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos rápidos para el menú hamburguesa */
+        /* Mantenemos tus estilos de hamburguesa */
         .menu-hamburguesa {
             display: flex;
             flex-direction: column;
@@ -22,7 +22,7 @@
             border-radius: 2px;
         }
         .nav-movil {
-            display: none; /* Se activará con JavaScript */
+            display: none;
             position: absolute;
             top: 70px;
             left: 0;
@@ -68,21 +68,8 @@
     <section id="catalogo" style="padding: 20px;">
         <h2 style="font-size: 1.1rem; letter-spacing: 1px;">DESCUBRE NUESTRAS <strong style="color: var(--verde-prince);">COLECCIONES</strong></h2>
         
-        <div class="grid-productos" id="catalogo-lista" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
-            <div style="border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
-                <div style="background: #f0f0f0; height: 150px;"></div>
-                <div style="padding: 10px;">
-                    <p style="font-size: 0.8rem; margin: 0;">Cargando...</p>
-                    <b style="color: var(--verde-prince);">$ 0.00</b>
-                </div>
-            </div>
-            <div style="border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
-                <div style="background: #f0f0f0; height: 150px;"></div>
-                <div style="padding: 10px;">
-                    <p style="font-size: 0.8rem; margin: 0;">Cargando...</p>
-                    <b style="color: var(--verde-prince);">$ 0.00</b>
-                </div>
-            </div>
+        <div class="grid-productos" id="catalogo-lista">
+            <p style="grid-column: span 2; text-align: center;">Cargando sorpresas de San Valentín...</p>
         </div>
     </section>
 
@@ -97,19 +84,70 @@
         </div>
     </footer>
 
-    <div class="ai-widget" style="position: fixed; bottom: 20px; right: 20px; background: black; color: white; padding: 12px 20px; border-radius: 30px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+    <div class="ai-widget" style="position: fixed; bottom: 20px; right: 20px; background: black; color: white; padding: 12px 20px; border-radius: 30px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 2000;">
         <span>🤖</span> <b>Asistente</b>
     </div>
 
+    <div id="modal-visor" class="modal-prince" onclick="cerrarModal()">
+        <span class="close-modal">&times;</span>
+        <img id="img-modal" class="modal-content">
+    </div>
+
     <script>
+        // Función para el menú hamburguesa
         function toggleMenu() {
             const menu = document.getElementById('menu-desplegable');
-            if (menu.style.display === 'flex') {
-                menu.style.display = 'none';
-            } else {
-                menu.style.display = 'flex';
+            menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        // Motor de carga de productos desde Cloudflare D1
+        async function cargarProductos() {
+            const lista = document.getElementById('catalogo-lista');
+            try {
+                const res = await fetch('/api/productos');
+                const productos = await res.json();
+                
+                if (productos.length === 0) {
+                    lista.innerHTML = "<p style='grid-column: span 2;'>Próximamente más productos...</p>";
+                    return;
+                }
+
+                lista.innerHTML = productos.map(p => {
+                    const fotos = p.galeria ? p.galeria.split(',') : [p.imagen_url];
+                    return `
+                        <div style="border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                            <div class="card-gallery" onclick="event.stopPropagation(); abrirModal('${fotos[0].trim()}')">
+                                ${fotos.map(f => `<img src="${f.trim()}" alt="${p.nombre}">`).join('')}
+                            </div>
+                            <div style="padding: 12px;">
+                                <h3 style="font-size: 0.9rem; margin: 0; color: #333;">${p.nombre}</h3>
+                                <b style="color: var(--verde-prince); font-size: 1.1rem;">DOP ${p.precio.toLocaleString()}</b>
+                                <button onclick="window.location.href='https://wa.me/829XXXXXXX?text=Hola Prince, me interesa: ${p.nombre}'" 
+                                        class="btn-prince" style="width: 100%; margin-top: 10px; padding: 10px; font-size: 0.8rem; border: none; cursor:pointer;">
+                                    Cotizar WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error("Error cargando productos:", e);
+                lista.innerHTML = "<p style='grid-column: span 2;'>Error al conectar con el catálogo.</p>";
             }
         }
+
+        // Funciones del Modal
+        function abrirModal(src) {
+            document.getElementById('img-modal').src = src;
+            document.getElementById('modal-visor').style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-visor').style.display = 'none';
+        }
+
+        // Iniciar carga al abrir la web
+        window.onload = cargarProductos;
     </script>
 </body>
 </html>
