@@ -12,8 +12,8 @@ collections:
   - name: "paginas"
     label: "Paginas"
     files:
-      - file: "content/site/home.json"
+    - file: "content/site/home.json"
         label: "Home"
         name: "home"
         fields:
-          - {label: "Titulo", name: "title", widget: "string"}
+        - {label: "Titulo", name: "title", widget: "string"}
