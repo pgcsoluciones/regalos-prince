@@ -1,0 +1,7 @@
+/admin/*
+  Cross-Origin-Opener-Policy: unsafe-none
+  Cross-Origin-Embedder-Policy: unsafe-none
+
+/api/auth*
+  Cross-Origin-Opener-Policy: unsafe-none
+  Cache-Control: no-store
