@@ -1,10 +1,10 @@
-base_url: https://regalos.grupoprince.com
-auth_endpoint: auth 
-
 backend:
   name: github
   repo: pgcsoluciones/regalos-prince
   branch: main
+  base_url: https://regalos.grupoprince.com
+  auth_endpoint: /admin/auth # Ahora dentro de backend y con /
+  site_id: regalos.grupoprince.com
 
 media_folder: "public/images"
 public_folder: "/images"
