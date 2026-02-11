@@ -1,5 +1,5 @@
 base_url: https://regalos.grupoprince.com
-auth_endpoint: admin/auth # Este apunta a tu archivo functions/admin/auth.js
+auth_endpoint: auth # Este apunta a tu archivo functions/admin/auth.js
 
 backend:
   name: github
