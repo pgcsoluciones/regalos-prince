@@ -1,0 +1,37 @@
+backend:
+  name: github
+  repo: pgcsoluciones/regalos-prince
+  branch: main
+
+media_folder: "public/images"
+public_folder: "/images"
+
+collections:
+  - name: "paginas"
+    label: "Secciones del Sitio"
+    files:
+      - file: "content/site/home.json"
+        label: "Inicio (Home / Landing)"
+        name: "home"
+        fields:
+          - {label: "Título Principal (Hero)", name: "hero_title", widget: "string"}
+          - {label: "Subtítulo", name: "hero_subtitle", widget: "text"}
+          - {label: "Banner Principal", name: "hero_image", widget: "image"}
+          - {label: "Mensaje de Temporada", name: "temporada_msg", widget: "string"}
+
+  - name: "testimonios"
+    label: "Testimonios"
+    folder: "content/testimonios"
+    create: true
+    fields:
+      - {label: "Nombre Cliente", name: "title", widget: "string"}
+      - {label: "Testimonio", name: "body", widget: "text"}
+      - {label: "Foto", name: "foto", widget: "image", required: false}
+
+  - name: "faq"
+    label: "Preguntas Frecuentes"
+    folder: "content/faq"
+    create: true
+    fields:
+      - {label: "Pregunta", name: "title", widget: "string"}
+      - {label: "Respuesta", name: "body", widget: "markdown"}
