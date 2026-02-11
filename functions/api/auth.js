@@ -3,10 +3,9 @@ export async function onRequestGet(context) {
   const code = urlObj.searchParams.get("code");
   const state = urlObj.searchParams.get("state");
 
-  // Definimos la URI de redirección exacta para evitar errores de mismatch
+  // URL exacta para evitar el error de mismatch en el redirect_uri
   const redirectUri = `${urlObj.origin}${urlObj.pathname}`;
 
-  // 1. Si no hay código, vamos a GitHub
   if (!code) {
     const authUrl = new URL("https://github.com/login/oauth/authorize");
     authUrl.searchParams.set("client_id", context.env.GITHUB_CLIENT_ID);
@@ -17,7 +16,6 @@ export async function onRequestGet(context) {
     return Response.redirect(authUrl.toString(), 302);
   }
 
-  // 2. Intercambio de código por token
   try {
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
@@ -35,7 +33,7 @@ export async function onRequestGet(context) {
 
     const result = await response.json();
 
-    // Validamos que realmente recibimos un token
+    // Si no hay token, mostramos el error técnico en lugar de intentar cerrar la ventana
     if (!result.access_token) {
       return new Response(
         `Error de OAuth: ${JSON.stringify(result)}`,
@@ -43,7 +41,6 @@ export async function onRequestGet(context) {
       );
     }
 
-    // 3. Script de comunicación con el CMS
     const html = `<!doctype html>
 <html>
   <head><meta charset="utf-8"><title>Autorizando Prince Admin...</title></head>
@@ -51,15 +48,15 @@ export async function onRequestGet(context) {
     <script>
       (function () {
         var token = ${JSON.stringify(result.access_token)};
-        // El formato exacto que espera Decap CMS
+        // Formato estricto para Decap CMS
         var msg = "authorization:github:success:" + JSON.stringify({ token: token });
 
         if (window.opener) {
-          // Usamos "*" para que el mensaje llegue sin importar micro-diferencias en la URL
+          // El targetOrigin en "*" soluciona el problema de que el panel no reaccione
           window.opener.postMessage(msg, "*");
           setTimeout(function(){ window.close(); }, 300);
         } else {
-          document.body.innerText = "Error: Ventana principal no encontrada.";
+          document.body.innerText = "Error: No se encontró la ventana principal del administrador.";
         }
       })();
     </script>
@@ -69,6 +66,6 @@ export async function onRequestGet(context) {
     return new Response(html, { headers: { "content-type": "text/html; charset=utf-8" } });
 
   } catch (e) {
-    return new Response("Error técnico: " + e.message, { status: 500 });
+    return new Response("Error técnico de conexión: " + e.message, { status: 500 });
   }
 }
