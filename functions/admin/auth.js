@@ -33,6 +33,6 @@ export async function onRequestGet(context) {
   }
 
   // Si no hay código, redirigimos a GitHub para pedir permiso
-  const url = `https://github.com/login/oauth/authorize?client_id=${context.env.GITHUB_CLIENT_ID}&scope=repo,user`;
-  return Response.redirect(url);
+  const url = `https://github.com/login/oauth/authorize?client_id=${context.env.GITHUB_CLIENT_ID}&scope=repo,user&state=${state || ''}`;
+  return Response.redirect(url);  
 }
