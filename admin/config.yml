@@ -3,7 +3,7 @@ backend:
   repo: pgcsoluciones/regalos-prince
   branch: main
   base_url: https://regalos.grupoprince.com
-  auth_endpoint: auth # Sin la palabra 'admin' y sin barra inicial porque está en la raíz de functions
+  auth_endpoint: api/auth # Cambiamos 'auth' por 'api/auth' para que Cloudflare le dé prioridad de función
   site_id: regalos.grupoprince.com
 
 media_folder: "public/images"
