@@ -1,5 +1,5 @@
 base_url: https://regalos.grupoprince.com
-auth_endpoint: /admin/auth
+auth_endpoint: /admin/auth # Este apunta a tu archivo functions/admin/auth.js
 
 backend:
   name: github
@@ -22,17 +22,31 @@ collections:
           - {label: "Banner Principal", name: "hero_image", widget: "image"}
           - {label: "Mensaje de Temporada", name: "temporada_msg", widget: "string"}
 
+  - name: "informativo"
+    label: "Secciones Informativas"
+    files:
+      - file: "content/site/pagos.json"
+        label: "Formas de Pago"
+        name: "pagos"
+        fields:
+          - {label: "Texto Explicativo", name: "body", widget: "markdown"}
+      - file: "content/site/envios.json"
+        label: "Información de Envíos"
+        name: "envios"
+        fields:
+          - {label: "Políticas generales", name: "body", widget: "markdown"}
+
   - name: "testimonios"
     label: "Testimonios"
     folder: "content/testimonios"
     create: true
     fields:
-      - {label: "Nombre Cliente", name: "title", widget: "string"}
-      - {label: "Testimonio", name: "body", widget: "text"}
-      - {label: "Foto", name: "foto", widget: "image", required: false}
+      - {label: "Nombre del Cliente", name: "title", widget: "string"}
+      - {label: "Texto del Testimonio", name: "body", widget: "text"}
+      - {label: "Imagen", name: "image", widget: "image", required: false}
 
   - name: "faq"
-    label: "Preguntas Frecuentes"
+    label: "Preguntas Frecuentes (FAQ)"
     folder: "content/faq"
     create: true
     fields:
