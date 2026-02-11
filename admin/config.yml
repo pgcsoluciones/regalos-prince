@@ -3,7 +3,7 @@ backend:
   repo: pgcsoluciones/regalos-prince
   branch: main
   base_url: https://regalos.grupoprince.com
-  auth_endpoint: /admin/auth # Ahora dentro de backend y con /
+  auth_endpoint: auth # Sin la palabra 'admin' y sin barra inicial porque está en la raíz de functions
   site_id: regalos.grupoprince.com
 
 media_folder: "public/images"
@@ -15,6 +15,7 @@ collections:
     files:
       - file: "content/site/home.json"
         label: "Inicio (Home / Landing)"
+        # ... resto de tus campos ...
         name: "home"
         fields:
           - {label: "Título Principal (Hero)", name: "hero_title", widget: "string"}
