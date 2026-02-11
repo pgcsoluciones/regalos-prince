@@ -1,10 +1,15 @@
-export async function onRequestGet(context) {
-  const { searchParams } = new URL(context.request.url);
-  const code = searchParams.get("code");
-  const state = searchParams.get("state");
+export async function onRequest(context) {
+  const url = new URL(context.request.url);
+  const code = url.searchParams.get("code");
 
-  // Si GitHub nos devuelve el código, lo procesamos
-  if (code) {
+  // 1. Si no hay código, redirigimos a GitHub para iniciar sesión
+  if (!code) {
+    const githubUrl = `https://github.com/login/oauth/authorize?client_id=${context.env.GITHUB_CLIENT_ID}&scope=repo,user`;
+    return Response.redirect(githubUrl);
+  }
+
+  // 2. Si hay código, intercambiamos por un Token de acceso
+  try {
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
@@ -17,22 +22,26 @@ export async function onRequestGet(context) {
         code,
       }),
     });
+
     const result = await response.json();
-    
-    // Devolvemos el token al CMS
+
+    if (result.error) {
+      return new Response(`Error de GitHub: ${result.error_description}`, { status: 500 });
+    }
+
+    // 3. Enviamos el token de vuelta al CMS mediante postMessage
     return new Response(
       `<html><body><script>
-        const postMsg = (token) => {
-          window.opener.postMessage('authorization:github:success:' + JSON.stringify({token}), '*');
+        (function() {
+          const token = '${result.access_token}';
+          const message = 'authorization:github:success:' + JSON.stringify({token: token, provider: 'github'});
+          window.opener.postMessage(message, '*');
           window.close();
-        };
-        postMsg('${result.access_token}');
+        })();
       </script></body></html>`,
       { headers: { "content-type": "text/html" } }
     );
+  } catch (e) {
+    return new Response(`Error interno: ${e.message}`, { status: 500 });
   }
-
-  // Si no hay código, redirigimos a GitHub para pedir permiso
-  const url = `https://github.com/login/oauth/authorize?client_id=${context.env.GITHUB_CLIENT_ID}&scope=repo,user&state=${state || ''}`;
-  return Response.redirect(url);  
 }
