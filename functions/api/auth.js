@@ -2,13 +2,13 @@ export async function onRequest(context) {
   const { searchParams } = new URL(context.request.url);
   const code = searchParams.get("code");
 
-  // 1. Si no hay código, redirigimos a GitHub
+  // 1. Redirigir a GitHub si no hay código
   if (!code) {
     const url = `https://github.com/login/oauth/authorize?client_id=${context.env.GITHUB_CLIENT_ID}&scope=repo,user`;
     return Response.redirect(url, 302);
   }
 
-  // 2. Intercambio de código por Token
+  // 2. Intercambiar código por Token
   try {
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
@@ -25,29 +25,33 @@ export async function onRequest(context) {
 
     const result = await response.json();
 
-    // 3. Respuesta especial que el CMS espera para cerrar la ventana y entrar
-    const script = `
-      <html><body><script>
-        (function() {
-          function recieveMessage(e) {
-            console.log("Recibido:", e.data);
-          }
-          window.addEventListener("message", recieveMessage, false);
-          
-          const message = "authorization:github:success:" + JSON.stringify({
-            token: "${result.access_token}",
-            provider: "github"
-          });
-          
-          window.opener.postMessage(message, "*");
-          window.close();
-        })();
-      </script></body></html>
+    // 3. RESPUESTA CRÍTICA: Este script cierra la ventana y activa el CMS
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <script>
+          (function() {
+            const token = "${result.access_token}";
+            const message = "authorization:github:success:" + JSON.stringify({
+              token: token,
+              provider: "github"
+            });
+            
+            // Envía el token a la ventana principal
+            window.opener.postMessage(message, window.location.origin);
+            
+            // Cierra esta ventana después de enviar el mensaje
+            setTimeout(() => window.close(), 200);
+          })();
+        </script>
+      </body>
+      </html>
     `;
 
-    return new Response(script, { headers: { "content-type": "text/html" } });
+    return new Response(html, { headers: { "content-type": "text/html" } });
 
   } catch (e) {
-    return new Response("Error de conexión: " + e.message, { status: 500 });
+    return new Response("Error: " + e.message, { status: 500 });
   }
 }
