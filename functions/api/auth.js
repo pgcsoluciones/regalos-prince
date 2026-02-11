@@ -1,9 +1,15 @@
-export async function onRequestGet(context) {
+export async function onRequest(context) {
   const { searchParams } = new URL(context.request.url);
   const code = searchParams.get("code");
-  const provider = searchParams.get("provider") || "github"; 
 
-  if (code) {
+  // 1. Si no hay código, redirigimos a GitHub
+  if (!code) {
+    const url = `https://github.com/login/oauth/authorize?client_id=${context.env.GITHUB_CLIENT_ID}&scope=repo,user`;
+    return Response.redirect(url, 302);
+  }
+
+  // 2. Intercambio de código por Token
+  try {
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
@@ -19,18 +25,29 @@ export async function onRequestGet(context) {
 
     const result = await response.json();
 
-    return new Response(
-      `<html><body><script>
-        window.opener.postMessage(
-          'authorization:${provider}:success:' + JSON.stringify({ token: '${result.access_token}' }),
-          '*'
-        );
-        window.close();
-      </script></body></html>`,
-      { headers: { "content-type": "text/html" } }
-    );
-  }
+    // 3. Respuesta especial que el CMS espera para cerrar la ventana y entrar
+    const script = `
+      <html><body><script>
+        (function() {
+          function recieveMessage(e) {
+            console.log("Recibido:", e.data);
+          }
+          window.addEventListener("message", recieveMessage, false);
+          
+          const message = "authorization:github:success:" + JSON.stringify({
+            token: "${result.access_token}",
+            provider: "github"
+          });
+          
+          window.opener.postMessage(message, "*");
+          window.close();
+        })();
+      </script></body></html>
+    `;
 
-  const url = `https://github.com/login/oauth/authorize?client_id=${context.env.GITHUB_CLIENT_ID}&scope=repo,user`;
-  return Response.redirect(url, 302);
+    return new Response(script, { headers: { "content-type": "text/html" } });
+
+  } catch (e) {
+    return new Response("Error de conexión: " + e.message, { status: 500 });
+  }
 }
