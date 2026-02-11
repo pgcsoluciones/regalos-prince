@@ -2,13 +2,11 @@ export async function onRequest(context) {
   const { searchParams } = new URL(context.request.url);
   const code = searchParams.get("code");
 
-  // 1. Redirigir a GitHub si no hay código
   if (!code) {
     const url = `https://github.com/login/oauth/authorize?client_id=${context.env.GITHUB_CLIENT_ID}&scope=repo,user`;
     return Response.redirect(url, 302);
   }
 
-  // 2. Intercambiar código por Token
   try {
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
@@ -25,24 +23,37 @@ export async function onRequest(context) {
 
     const result = await response.json();
 
-    // 3. RESPUESTA CRÍTICA: Este script cierra la ventana y activa el CMS
+    // SCRIPT DE CONEXIÓN DEFINITIVO
     const html = `
       <!DOCTYPE html>
       <html>
+      <head><title>Autorizando Prince Admin...</title></head>
       <body>
         <script>
           (function() {
             const token = "${result.access_token}";
-            const message = "authorization:github:success:" + JSON.stringify({
+            const provider = "github";
+            
+            // Formato exacto que requiere el CMS para desbloquear el panel
+            const response = {
               token: token,
-              provider: "github"
-            });
-            
-            // Envía el token a la ventana principal
-            window.opener.postMessage(message, window.location.origin);
-            
-            // Cierra esta ventana después de enviar el mensaje
-            setTimeout(() => window.close(), 200);
+              provider: provider
+            };
+
+            // Intentamos enviar el mensaje a la ventana que abrió esta
+            if (window.opener) {
+              window.opener.postMessage(
+                "authorization:" + provider + ":success:" + JSON.stringify(response),
+                window.location.origin
+              );
+              
+              // Pequeña pausa para asegurar el envío antes de cerrar
+              setTimeout(() => {
+                window.close();
+              }, 500);
+            } else {
+              document.body.innerHTML = "Error: No se encontró la ventana principal. Por favor, intenta de nuevo.";
+            }
           })();
         </script>
       </body>
@@ -52,6 +63,6 @@ export async function onRequest(context) {
     return new Response(html, { headers: { "content-type": "text/html" } });
 
   } catch (e) {
-    return new Response("Error: " + e.message, { status: 500 });
+    return new Response("Error técnico: " + e.message, { status: 500 });
   }
 }
