@@ -5,18 +5,15 @@ backend:
   base_url: https://regalos.grupoprince.com
   auth_endpoint: api/auth
 
-publish_mode: editorial_workflow
-
 media_folder: "public/images"
 public_folder: "/images"
 
 collections:
   - name: "paginas"
-    label: "Secciones del Sitio"
-    format: "json"
+    label: "Paginas"
     files:
       - file: "content/site/home.json"
-        label: "Inicio"
+        label: "Home"
         name: "home"
         fields:
-          - {label: "Título", name: "title", widget: "string"}
+          - {label: "Titulo", name: "title", widget: "string"}
