@@ -12,10 +12,8 @@ collections:
 - name: "paginas"
     label: "Secciones del Sitio"
     files:
-    - file: "content/site/home.json"
+      - file: "content/site/home.json"
         label: "Inicio"
         name: "home"
         fields:
-        - label: "Título"
-            name: "title"
-            widget: "string"
+          - {label: "Título", name: "title", widget: "string"}
