@@ -6,31 +6,26 @@
 </head>
 <body>
   <script>
-    // 1. Escuchar el mensaje del popup de autenticación
+    // 1. Receptor de emergencia para capturar el token
     window.addEventListener("message", (event) => {
-      // Validamos que el mensaje sea de éxito de GitHub
       if (typeof event.data === "string" && event.data.includes("authorization:github:success")) {
         const dataStr = event.data.split("success:")[1];
         try {
           const data = JSON.parse(dataStr);
+          // Creamos el objeto de usuario que Decap espera
           const userData = JSON.stringify({ token: data.token, provider: "github" });
           
-          // Guardamos en ambos nombres posibles para asegurar compatibilidad
-          window.localStorage.setItem("decap-cms-user", userData);
-          window.localStorage.setItem("netlify-cms-user", userData);
+          // FORZAMOS el guardado en LocalStorage
+          localStorage.setItem("decap-cms-user", userData);
+          localStorage.setItem("netlify-cms-user", userData);
           
-          console.log("Token capturado manualmente. Recargando...");
+          alert("¡Token capturado con éxito! El panel cargará ahora.");
           window.location.reload();
         } catch (e) {
-          console.error("Error al procesar el token:", e);
+          console.error("Error al procesar el JSON:", e);
         }
       }
     }, false);
-
-    // 2. Limpieza de seguridad si el login falla
-    if (window.location.hash.includes("error")) {
-       window.localStorage.removeItem("decap-cms-user");
-    }
   </script>
   
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
