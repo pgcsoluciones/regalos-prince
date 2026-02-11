@@ -1,11 +1,26 @@
-export async function onRequestGet(context) {
+// Función para inyectar cabeceras de seguridad en todas las respuestas
+function withHeaders(resp) {
+  const headers = new Headers(resp.headers);
+  // ✅ Crucial: Permite que la ventana hija hable con la madre (el Admin)
+  headers.set("Cross-Origin-Opener-Policy", "unsafe-none");
+  headers.set("Access-Control-Allow-Origin", "*");
+  headers.set("Cache-Control", "no-store");
+  return new Response(resp.body, { status: resp.status, statusText: resp.statusText, headers });
+}
+
+export async function onRequest(context) {
   const urlObj = new URL(context.request.url);
+
+  // Manejo de peticiones de seguridad del navegador
+  if (context.request.method === "OPTIONS") {
+    return withHeaders(new Response(null, { status: 204 }));
+  }
+
   const code = urlObj.searchParams.get("code");
   const state = urlObj.searchParams.get("state");
-
-  // URL exacta para evitar el error de mismatch en el redirect_uri
   const redirectUri = `${urlObj.origin}${urlObj.pathname}`;
 
+  // 1. Fase de Redirección a GitHub
   if (!code) {
     const authUrl = new URL("https://github.com/login/oauth/authorize");
     authUrl.searchParams.set("client_id", context.env.GITHUB_CLIENT_ID);
@@ -13,9 +28,10 @@ export async function onRequestGet(context) {
     authUrl.searchParams.set("redirect_uri", redirectUri);
     if (state) authUrl.searchParams.set("state", state);
 
-    return Response.redirect(authUrl.toString(), 302);
+    return withHeaders(Response.redirect(authUrl.toString(), 302));
   }
 
+  // 2. Fase de Intercambio de Token
   try {
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
@@ -33,14 +49,13 @@ export async function onRequestGet(context) {
 
     const result = await response.json();
 
-    // Si no hay token, mostramos el error técnico en lugar de intentar cerrar la ventana
     if (!result.access_token) {
-      return new Response(
-        `Error de OAuth: ${JSON.stringify(result)}`,
-        { status: 401, headers: { "content-type": "text/plain" } }
+      return withHeaders(
+        new Response(`Error de OAuth: ${JSON.stringify(result)}`, { status: 401 })
       );
     }
 
+    // 3. Script de Comunicación (PostMessage)
     const html = `<!doctype html>
 <html>
   <head><meta charset="utf-8"><title>Autorizando Prince Admin...</title></head>
@@ -48,24 +63,23 @@ export async function onRequestGet(context) {
     <script>
       (function () {
         var token = ${JSON.stringify(result.access_token)};
-        // Formato estricto para Decap CMS
         var msg = "authorization:github:success:" + JSON.stringify({ token: token });
 
         if (window.opener) {
-          // El targetOrigin en "*" soluciona el problema de que el panel no reaccione
           window.opener.postMessage(msg, "*");
           setTimeout(function(){ window.close(); }, 300);
         } else {
-          document.body.innerText = "Error: No se encontró la ventana principal del administrador.";
+          // Si ves este mensaje, es que el navegador bloqueó la conexión
+          document.body.innerText = "Error: window.opener no detectado. Política COOP activa.";
         }
       })();
     </script>
   </body>
 </html>`;
 
-    return new Response(html, { headers: { "content-type": "text/html; charset=utf-8" } });
+    return withHeaders(new Response(html, { headers: { "content-type": "text/html; charset=utf-8" } }));
 
   } catch (e) {
-    return new Response("Error técnico de conexión: " + e.message, { status: 500 });
+    return withHeaders(new Response("Error técnico: " + e.message, { status: 500 }));
   }
 }
