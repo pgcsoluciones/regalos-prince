@@ -9,11 +9,11 @@ media_folder: "public/images"
 public_folder: "/images"
 
 collections:
-  - name: "paginas"
-    label: "Paginas"
+- name: "paginas"
+    label: "Secciones del Sitio"
     files:
     - file: "content/site/home.json"
-        label: "Home"
+        label: "Inicio"
         name: "home"
         fields:
-        - {label: "Titulo", name: "title", widget: "string"}
+        - {label: "Título", name: "title", widget: "string"}
