@@ -3,19 +3,17 @@ backend:
   repo: pgcsoluciones/regalos-prince
   branch: main
   base_url: https://regalos.grupoprince.com
-  auth_endpoint: api/auth # Sin barra inicial para evitar conflictos de rutas
-  
-local_backend: true # Permite pruebas locales si fuera necesario
+  auth_endpoint: api/auth
 
 media_folder: "public/images"
 public_folder: "/images"
 
 collections:
-  - name: "configuracion"
-    label: "Configuración General"
+  - name: "paginas"
+    label: "Secciones del Sitio"
     files:
       - file: "content/site/home.json"
-        label: "Home"
+        label: "Inicio"
         name: "home"
         fields:
           - {label: "Título", name: "title", widget: "string"}
