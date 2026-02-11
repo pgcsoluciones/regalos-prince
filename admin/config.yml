@@ -9,7 +9,7 @@ media_folder: public/images
 public_folder: /images
 
 collections:
-  - name: paginas
+- name: paginas
     label: Secciones del Sitio
     files:
       - file: content/site/home.json
