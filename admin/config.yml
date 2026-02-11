@@ -1,3 +1,6 @@
+base_url: https://regalos.grupoprince.com
+auth_endpoint: /admin/auth
+
 backend:
   name: github
   repo: pgcsoluciones/regalos-prince
