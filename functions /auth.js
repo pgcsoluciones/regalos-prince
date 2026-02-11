@@ -1,7 +1,6 @@
 export async function onRequestGet(context) {
   const { searchParams } = new URL(context.request.url);
   const code = searchParams.get("code");
-  const state = searchParams.get("state") || "";
   const provider = searchParams.get("provider") || "github"; 
 
   if (code) {
@@ -20,7 +19,6 @@ export async function onRequestGet(context) {
 
     const result = await response.json();
 
-    // El mensaje de éxito debe incluir el provider dinámicamente
     return new Response(
       `<html><body><script>
         window.opener.postMessage(
@@ -33,6 +31,6 @@ export async function onRequestGet(context) {
     );
   }
 
-  const url = `https://github.com/login/oauth/authorize?client_id=${context.env.GITHUB_CLIENT_ID}&scope=repo,user&state=${state}`;
+  const url = `https://github.com/login/oauth/authorize?client_id=${context.env.GITHUB_CLIENT_ID}&scope=repo,user`;
   return Response.redirect(url, 302);
 }
