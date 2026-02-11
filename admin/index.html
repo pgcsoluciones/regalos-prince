@@ -6,11 +6,33 @@
 </head>
 <body>
   <script>
-    // Limpia intentos previos que causan el bucle de login
-    if (window.location.hash.includes("access_token")) {
+    // 1. Escuchar el mensaje del popup de autenticación
+    window.addEventListener("message", (event) => {
+      // Validamos que el mensaje sea de éxito de GitHub
+      if (typeof event.data === "string" && event.data.includes("authorization:github:success")) {
+        const dataStr = event.data.split("success:")[1];
+        try {
+          const data = JSON.parse(dataStr);
+          const userData = JSON.stringify({ token: data.token, provider: "github" });
+          
+          // Guardamos en ambos nombres posibles para asegurar compatibilidad
+          window.localStorage.setItem("decap-cms-user", userData);
+          window.localStorage.setItem("netlify-cms-user", userData);
+          
+          console.log("Token capturado manualmente. Recargando...");
+          window.location.reload();
+        } catch (e) {
+          console.error("Error al procesar el token:", e);
+        }
+      }
+    }, false);
+
+    // 2. Limpieza de seguridad si el login falla
+    if (window.location.hash.includes("error")) {
        window.localStorage.removeItem("decap-cms-user");
     }
   </script>
+  
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 </body>
 </html>
