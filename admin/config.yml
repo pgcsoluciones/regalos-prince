@@ -3,54 +3,19 @@ backend:
   repo: pgcsoluciones/regalos-prince
   branch: main
   base_url: https://regalos.grupoprince.com
-  auth_endpoint: api/auth
-  # Añadimos esta línea para forzar el uso del token que estamos enviando
-  auth_type: pkce
+  auth_endpoint: api/auth # Sin barra inicial para evitar conflictos de rutas
   
+local_backend: true # Permite pruebas locales si fuera necesario
+
 media_folder: "public/images"
 public_folder: "/images"
 
 collections:
-  - name: "paginas"
-    label: "Secciones del Sitio"
+  - name: "configuracion"
+    label: "Configuración General"
     files:
       - file: "content/site/home.json"
-        label: "Inicio (Home / Landing)"
-        # ... resto de tus campos ...
+        label: "Home"
         name: "home"
         fields:
-          - {label: "Título Principal (Hero)", name: "hero_title", widget: "string"}
-          - {label: "Subtítulo", name: "hero_subtitle", widget: "text"}
-          - {label: "Banner Principal", name: "hero_image", widget: "image"}
-          - {label: "Mensaje de Temporada", name: "temporada_msg", widget: "string"}
-
-  - name: "informativo"
-    label: "Secciones Informativas"
-    files:
-      - file: "content/site/pagos.json"
-        label: "Formas de Pago"
-        name: "pagos"
-        fields:
-          - {label: "Texto Explicativo", name: "body", widget: "markdown"}
-      - file: "content/site/envios.json"
-        label: "Información de Envíos"
-        name: "envios"
-        fields:
-          - {label: "Políticas generales", name: "body", widget: "markdown"}
-
-  - name: "testimonios"
-    label: "Testimonios"
-    folder: "content/testimonios"
-    create: true
-    fields:
-      - {label: "Nombre del Cliente", name: "title", widget: "string"}
-      - {label: "Texto del Testimonio", name: "body", widget: "text"}
-      - {label: "Imagen", name: "image", widget: "image", required: false}
-
-  - name: "faq"
-    label: "Preguntas Frecuentes (FAQ)"
-    folder: "content/faq"
-    create: true
-    fields:
-      - {label: "Pregunta", name: "title", widget: "string"}
-      - {label: "Respuesta", name: "body", widget: "markdown"}
+          - {label: "Título", name: "title", widget: "string"}
